@@ -1,0 +1,45 @@
+# ── 환경변수 (민감 정보 — .env.sample 참조) ──
+.env
+.env.local
+.env.*.local
+
+# ── Python ────────────────────────────────────
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.egg-info/
+*.egg
+dist/
+build/
+wheels/
+
+# ── 가상환경 ──────────────────────────────────
+.venv/
+venv/
+env/
+
+# ── 테스트·커버리지 ───────────────────────────
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# ── 타입 검사 ─────────────────────────────────
+.mypy_cache/
+
+# ── 로그·임시 파일 ────────────────────────────
+*.log
+logs/
+tmp/
+scratch/
+
+# ── IDE ───────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── OS ────────────────────────────────────────
+Thumbs.db
+.DS_Store

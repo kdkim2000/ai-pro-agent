@@ -1,0 +1,21 @@
+# config/gate_rules.yaml
+# T1-4에서 상세 정의 예정 — 현재는 구조 예시만 포함
+
+gates:
+  requirement:
+    required_fields: [cr_id, requirement_text, target_system]
+    min_length:
+      requirement_text: 50
+  impact_analysis:
+    required_fields: [affected_tables, affected_programs]
+    oracle_check: true
+  artifact:
+    required_files: [requirement_doc, impact_doc, test_definition]
+  master_registration:
+    checks:
+      - program_master: true
+      - table_master: true
+      - term_dictionary: true
+      - oracle_consistency: true
+  deploy:
+    required_files: [pr_url, test_result_mail, release_attachment]

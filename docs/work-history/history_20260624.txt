@@ -1,0 +1,132 @@
+문서를 모두 검토했습니다. T1-1_GUIDE.md가 비어있으므로, AI-Agent_TASK.md의 T1-1 명세와 프로젝트 디렉토리 구조를 기반으로 구현 계획을 수립하겠습니다.
+
+Viewed T1-1_GUIDE.md:1-800
+Viewed T1-1_GUIDE.md:800-999
+
+T1-1_GUIDE.md의 전체 내용을 확인했습니다. 매우 상세한 가이드입니다. 이제 이를 기반으로 구현 계획을 수립하겠습니다.
+
+Edited implementation_plan.md
+
+T1-1 구현 계획을 작성했습니다. 주요 포인트를 정리하면:
+
+**계획 요약:**
+- [T1-1_GUIDE.md](file:///e:/apps/ai-pro-agent/docs/T1-1_GUIDE.md)의 코드를 그대로 반영하여 **21개 파일**을 생성
+- 디렉토리 구조 → 메타 파일 → 설정 파일 → 핵심 코드 → 테스트 코드 순서로 진행
+- LangGraph 뼈대 테스트는 사내 API 없이 로컬에서 즉시 검증 가능
+
+**확인이 필요한 사항이 Implementation Plan에 포함되어 있습니다:**
+1. **Python 버전** — 3.11+ 필요
+2. **가상환경 방식** — `venv` vs `conda`
+3. **패키지 설치** — 공개 PyPI 사용 가능 여부
+
+계획을 검토하시고 승인해 주시면 바로 실행하겠습니다.
+
+구현 계획이 승인되었습니다. 바로 실행에 들어가겠습니다.
+
+Edited task.md
+Used tool: ask_permission
+
+이제 모든 파일을 생성합니다. 먼저 디렉토리 구조와 메타 파일들부터 시작합니다.
+
+Edited .gitignore
+Edited requirements.txt
+Edited .env
+Edited pytest.ini
+
+메타 파일들이 생성되었습니다. 이제 README.md와 설정 파일들을 생성합니다.
+
+Edited README.md
+Edited config.yaml
+Edited gate_rules.yaml
+
+설정 파일 완료. 이제 `src/` 패키지의 `__init__.py`들과 핵심 구현 코드를 생성합니다.
+
+Edited __init__.py
+Edited __init__.py
+Edited __init__.py
+Edited __init__.py
+Edited __init__.py
+Edited __init__.py
+Edited __init__.py
+Edited __init__.py
+Edited __init__.py
+Edited __init__.py
+
+모든 패키지 초기화 완료. 이제 **핵심 구현 코드** 4개 파일을 생성합니다.
+
+Edited aiPro_client.py
+Edited embedding_client.py
+Edited febrix_client.py
+Edited collections.py
+
+이제 **LangGraph 뼈대**와 **로거**를 생성합니다.
+
+Edited scaffold.py
+Edited logger.py
+
+핵심 코드 완료. 이제 **5개 테스트 파일**을 생성합니다.
+
+Edited test_llm.py
+Edited test_embedding.py
+Edited test_febrix.py
+Edited test_scaffold.py
+Edited test_smoke.py
+
+모든 파일이 생성되었습니다! 이제 Task를 업데이트하고, **환경 구성 및 검증** 단계로 진행합니다. Python 버전 확인부터 시작합니다.
+
+Edited task.md
+Ran command: `python --version`
+
+Python 3.11.0 확인 완료! 가상환경을 생성하고 패키지를 설치합니다.
+
+Ran command: `python -m venv .venv`
+Used tool: schedule
+
+가상환경 생성 완료! 이제 패키지를 설치합니다.
+
+Ran command: `.venv\Scripts\pip.exe install -r requirements.txt`
+
+`requirements.txt`의 한글 주석이 `cp949` 인코딩 문제를 일으켰습니다. 주석을 영문으로 변경합니다.
+
+Edited requirements.txt
+Ran command: `.venv\Scripts\python.exe -m pip install --upgrade pip`
+Used tool: schedule
+
+pip 업그레이드 완료 (22.3 → 26.1.2). 이제 requirements.txt 패키지 설치를 재시도합니다.
+
+Ran command: `.venv\Scripts\pip.exe install -r requirements.txt`
+Used tool: schedule
+
+패키지 설치가 진행 중입니다. 완료되면 자동으로 알림을 받겠습니다.
+
+모든 패키지가 성공적으로 설치되었습니다! 이제 **LangGraph 뼈대 테스트**를 실행하여 검증합니다.
+
+Ran command: `.venv\Scripts\pytest.exe tests/test_scaffold.py -v`
+
+**3개 테스트 모두 통과!** 🎉 Task 상태를 최종 업데이트하고 Walkthrough를 작성합니다.
+
+Edited task.md
+Edited walkthrough.md
+
+## ✅ T1-1. 개발·운영 환경 셋업 완료
+
+### 수행 결과
+
+| 항목 | 결과 |
+|------|------|
+| **파일 생성** | 24개 파일 (8개 패키지, 6개 핵심 구현, 5개 테스트, 설정/메타) |
+| **Python 환경** | 3.11.0 + venv + pip 26.1.2 |
+| **패키지** | `langgraph 1.2.6`, `langchain 1.3.11`, `langchain-core 1.4.8` 등 40+ |
+| **LangGraph 테스트** | **3 passed in 0.67s** ✅ (신규개발·DB변경·기능변경 라우팅) |
+
+### 핵심 구현체
+- [aiPro_client.py](file:///e:/apps/ai-pro-agent/src/llm/aiPro_client.py) — `BaseChatModel` 래퍼
+- [embedding_client.py](file:///e:/apps/ai-pro-agent/src/llm/embedding_client.py) — `Embeddings` 래퍼
+- [febrix_client.py](file:///e:/apps/ai-pro-agent/src/vectordb/febrix_client.py) — `VectorStore` 래퍼
+- [scaffold.py](file:///e:/apps/ai-pro-agent/src/agent/scaffold.py) — LangGraph DAG 뼈대 + `AgentState`
+
+### 사내망 추가 작업
+1. `.env`에 실제 AI Pro / Febrix 엔드포인트·API 키 입력
+2. `pytest tests/test_smoke.py -v`로 전체 5개 스모크 테스트 통과 확인
+
+다음 Task인 **T1-2. 시스템 연동 인터페이스 설계**로 진행할 준비가 되었습니다.
