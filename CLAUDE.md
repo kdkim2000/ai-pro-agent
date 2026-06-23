@@ -102,3 +102,33 @@ When implementing new skills in `src/skills/`, register them as nodes in `src/ag
 ## Logging
 
 Use `get_logger()` from `src/utils/logger.py` everywhere. Output is structured JSON (structlog). Audit-trail entries should be emitted at key decision points for compliance traceability.
+
+## Work History Protocol
+
+**모든 Task(T-시리즈) 또는 의미 있는 작업 완료 후 반드시 이력 파일을 작성하고 커밋한다.**
+
+### 이력 파일 규칙
+
+- 위치: `docs/work-history/<TASK-ID>_<제목>_작업이력.md`
+  - 예: `T1-2_커넥터인터페이스_작업이력.md`, `T2-1_RAG파이프라인_작업이력.md`
+- 형식: `docs/work-history/T1-1_환경셋업_작업이력.md` 참조
+- 필수 섹션:
+  1. 수행일 · 수행 방법 · 소요 시간 · 참조 문서 (헤더 메타)
+  2. 작업 개요 (목적, 입력 문서, 완료 기준 체크리스트)
+  3. VIBE 코딩 수행 과정 (단계별 상세 — 흐름도 포함)
+  4. 발생 이슈 및 해결 (증상·원인·해결·교훈 표)
+  5. 최종 변경 파일 목록
+  6. 학습 포인트
+  7. 사내망 환경 전환 시 체크리스트 (해당 시)
+
+### 작성 후 커밋
+
+```bash
+git add docs/work-history/
+git commit -m "docs: <TASK-ID> 작업이력 추가"
+git push
+```
+
+### CLAUDE.md 진행 현황 업데이트
+
+이력 파일 작성 후 위 **Implementation Phases** 섹션의 해당 Task 상태를 `complete`로 갱신한다.

@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"systemMessage\": \"[작업이력] Task 완료 시 docs/work-history/ 에 이력 파일을 작성하고 git commit 하세요. (CLAUDE.md → Work History Protocol 참조)\"}'",
+            "shell": "bash"
+          }
+        ]
+      }
+    ]
+  }
+}
