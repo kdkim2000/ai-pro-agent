@@ -130,3 +130,11 @@ Edited walkthrough.md
 2. `pytest tests/test_smoke.py -v`로 전체 5개 스모크 테스트 통과 확인
 
 다음 Task인 **T1-2. 시스템 연동 인터페이스 설계**로 진행할 준비가 되었습니다.
+
+수고하셨습니다. 오늘 완료된 작업 요약:
+
+T1-1 — LLM/Embedding/VectorDB 래퍼, LangGraph 스캐폴드
+T1-2 — 7개 시스템 커넥터 + Mock + ConnectorFactory (테스트 25/25)
+GitHub — https://github.com/kdkim2000/ai-pro-agent.git push 완료
+하네스 — 작업이력 자동 리마인더 Stop 훅 등록
+다음 세션은 T1-3 (전체 아키텍처 설계) 입니다. docs/T1-3_GUIDE.md 를 참조하세요.
