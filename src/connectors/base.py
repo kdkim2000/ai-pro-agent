@@ -71,7 +71,17 @@ class ConfluencePage:
 
 @dataclass
 class CRRecord:
-    """Doodream CR record"""
+    """Doodream CR record.
+
+    두드림이 실제 관리하는(=신뢰 가능) 필드: cr_id, title, description, cr_type,
+    status, requester, assignee, created_at, closed_at.
+
+    아래 4개 필드는 두드림에서 관리되지 않는다(미관리). 타 소스/스킬에서 채운다:
+      - affected_systems → Oracle 영향분석(T3-2)에서 도출
+      - actual_hours / estimated_hours → 공수 산정(T3-5) 별도 실적 소스
+      - tags → 분류 스킬이 생성
+    RAG 적재(src/rag/collector.py)는 이 4개 필드를 직렬화하지 않는다.
+    """
     cr_id: str
     title: str
     description: str
@@ -80,9 +90,10 @@ class CRRecord:
     requester: str
     assignee: str
     created_at: str
-    closed_at: Optional[str]
-    actual_hours: Optional[float]
-    estimated_hours: Optional[float]
+    closed_at: Optional[str] = None
+    # ── 이하 두드림 미관리(타 소스/스킬에서 채움) ──
+    actual_hours: Optional[float] = None
+    estimated_hours: Optional[float] = None
     affected_systems: List[str] = field(default_factory=list)
     tags: List[str] = field(default_factory=list)
 

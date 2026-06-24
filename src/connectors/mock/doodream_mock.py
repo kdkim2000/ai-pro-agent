@@ -6,7 +6,12 @@ from ..base import BaseDoodreamConnector, ConnectorResult, CRRecord
 
 
 class DoodreamMockConnector(BaseDoodreamConnector):
-    """Doodream Mock -- realistic CR sample data"""
+    """Doodream Mock -- realistic CR sample data.
+
+    참고: affected_systems / tags / actual_hours / estimated_hours 는 두드림 미관리
+    항목이라 RAG collector(src/rag/collector.py)가 직렬화하지 않는다. 샘플에는
+    JSM·master 등 타 커넥터 테스트 호환을 위해 남겨 둔다.
+    """
     is_mock = True
 
     _CR_SAMPLES = [

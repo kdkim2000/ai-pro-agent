@@ -53,6 +53,33 @@ def test_collect_cr_history_filter_by_type():
     assert all(doc.extra.get("cr_type") == "new_dev" for doc in docs)
 
 
+def test_collect_cr_omits_unmanaged_fields():
+    """두드림 미관리 항목(영향 시스템·태그·공수)은 직렬화되지 않아야 한다."""
+    collector = DataCollector()
+    docs = collector.collect_cr_history()
+    content = docs[0].content
+    for absent in ["영향 시스템", "태그", "실제 공수", "예상 공수"]:
+        assert absent not in content, f"미관리 필드 '{absent}' 가 직렬화됨"
+    for absent_key in ["actual_hours", "estimated_hours", "affected_systems", "tags"]:
+        assert absent_key not in docs[0].extra, f"미관리 키 '{absent_key}' 가 extra 에 존재"
+
+
+def test_collect_cr_extra_has_managed_fields():
+    """두드림 실제 관리 필드는 extra 에 보존되어야 한다."""
+    collector = DataCollector()
+    docs = collector.collect_cr_history()
+    for key in ["cr_type", "status", "requester", "assignee"]:
+        assert key in docs[0].extra, f"관리 필드 '{key}' 누락"
+
+
+def test_collect_cr_incremental_by_status():
+    """since_days + status 증분 경로 — 완료(closed) 건만 수집."""
+    collector = DataCollector()
+    docs = collector.collect_cr_history(since_days=90, status="closed")
+    assert len(docs) > 0
+    assert all(doc.extra.get("status") == "closed" for doc in docs)
+
+
 def test_collect_all_returns_all_sources():
     collector = DataCollector()
     result = collector.collect_all("test")

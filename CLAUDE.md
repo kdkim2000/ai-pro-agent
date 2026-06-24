@@ -93,7 +93,7 @@ Tasks defined in `docs/AI-Agent_TASK.md`. Current status:
 - **T1-3** (architecture design): pending
 - **T1-4** (gate config): pending
 - **T2**: RAG pipeline — chunking, indexing, hybrid search (`src/rag/`)
-  - **T2-1** (data collection & preprocessing): complete — collector, preprocessor, chunker, embedder, indexer, pipeline; 28 tests passing
+  - **T2-1** (data collection & preprocessing): complete — collector, preprocessor, chunker, embedder, indexer, pipeline; 31 tests passing. Revised 2026-06-25 for operational reality: 두드림 CR schema corrected to real fields only (affected_systems/tags/actual_hours/estimated_hours are 두드림-미관리), GitHub 선별+증분 / Confluence 하이브리드(MCP) / CR 최근3년+완료만 strategies, sync·freshness·incremental-upsert processes documented (incremental engine itself = T2-3). Note: 두드림 lacks actual_hours → T3-5 effort few-shot needs a separate source.
 - **T3**: 8 skill implementations (`src/skills/`)
 - **T4**: Validation & optimization
 - **T5**: MVP operations

@@ -159,12 +159,11 @@ class CRChunker:
     def chunk(self, doc: CleanDocument) -> List[TextChunk]:
         meta = _base_meta(doc)
         meta["chunk_type"] = "cr_record"
-        if "cr_type" in doc.extra:
-            meta["cr_type"] = doc.extra["cr_type"]
-        if "actual_hours" in doc.extra:
-            meta["actual_hours"] = doc.extra["actual_hours"]
-        if "affected_systems" in doc.extra:
-            meta["affected_systems"] = doc.extra["affected_systems"]
+        # 두드림 실제 관리 필드만 메타데이터로 승격(검색 후 필터에 활용).
+        # actual_hours / affected_systems / tags 는 두드림 미관리 항목이라 사용하지 않는다.
+        for key in ("cr_type", "status", "requester", "assignee"):
+            if key in doc.extra:
+                meta[key] = doc.extra[key]
         return [TextChunk(text=doc.content, metadata=meta)]
 
 

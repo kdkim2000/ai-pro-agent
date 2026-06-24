@@ -34,6 +34,24 @@ rag:
   chunk_overlap: 100     # 청크 오버랩 문자 수
   min_chunk_length: 50   # 최소 청크 길이 (미만 필터)
 
+  # ── 인덱싱 범위 (대용량 소스 현실 제약 반영) ──
+  cr_history_years: 3              # 두드림 CR 인덱싱 대상 기간 (최근 N년)
+  cr_history_status: closed        # 인덱싱 대상 CR 상태 (완료 건만)
+  stale_months: 12                 # 문서 신선도 임계 (초과 시 stale 표시·가중치 감점)
+  github_include:                  # GitHub 선별 인덱싱 대상 (glob, repo-상대 경로)
+    - "src/**"
+    - "**/*.sql"
+  github_exclude:                  # 인덱싱 제외 (생성물·vendor·테스트)
+    - "**/test/**"
+    - "**/tests/**"
+    - "**/generated/**"
+    - "**/build/**"
+    - "**/dist/**"
+    - "**/node_modules/**"
+    - "**/vendor/**"
+    - "**/*.min.js"
+  confluence_curated_spaces: []    # 사전 인덱싱할 핵심 Space 키 목록 (그 외는 MCP 온디맨드)
+
 agent:
   max_steps: 20          # 무한 루프 방지
   timeout_seconds: 120

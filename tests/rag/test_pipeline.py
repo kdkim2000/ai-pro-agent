@@ -62,13 +62,18 @@ class TestChunker:
             source="doodream", doc_type="cr_record", doc_id="CR-001",
             title="테스트", content="CR ID: CR-001\n제목: 테스트\n설명: 충분한 내용입니다",
             url="doodream://cr/CR-001", date="2026-06-01", language="ko",
-            extra={"cr_type": "new_dev", "actual_hours": 8.0},
+            extra={"cr_type": "new_dev", "status": "closed", "requester": "Hong", "assignee": "Kim"},
         )
         chunker = Chunker()
         chunks = chunker.chunk(doc)
         assert len(chunks) == 1
         assert chunks[0].metadata["source"] == "doodream"
         assert chunks[0].metadata["cr_type"] == "new_dev"
+        assert chunks[0].metadata["status"] == "closed"
+        assert chunks[0].metadata["assignee"] == "Kim"
+        # 두드림 미관리 항목은 메타데이터에 없어야 함
+        assert "actual_hours" not in chunks[0].metadata
+        assert "affected_systems" not in chunks[0].metadata
 
     def test_python_code_ast_chunking(self):
         content = "def foo():\n    return 1\n\ndef bar():\n    return 2\n"
