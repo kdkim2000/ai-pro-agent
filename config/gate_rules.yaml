@@ -1,21 +1,255 @@
 # config/gate_rules.yaml
-# T1-4에서 상세 정의 예정 — 현재는 구조 예시만 포함
+# T1-4 기준 전체 관리 포인트 게이트 규칙 정의
+# 버전 관리: 조건 변경 시 반드시 version 갱신
+version: "1.2.0"
+updated_at: "2026-06-24"
+updated_by: "중공업IT파트"
+
+# ── 전역 설정 ──────────────────────────────────────────────────────────────────
+settings:
+  max_gate_attempts: 3          # 게이트 최대 재시도 횟수 (초과 시 에스컬레이션)
+  confidence_threshold: 0.5     # LLM 신뢰도 임계값 (미만 시 HITL)
+  strict_mode: true             # true: required=true 규칙 1개라도 실패 시 전체 차단
+
+# ── 단계별 게이트 규칙 ─────────────────────────────────────────────────────────
+# check_type 종류:
+#   field_exists    : 필드가 None이 아님
+#   field_not_empty : 필드가 빈 문자열/리스트/딕셔너리가 아님
+#   min_length      : 문자열 최소 길이
+#   list_not_empty  : 리스트가 비어있지 않음
+#   list_max_count  : 리스트 길이 상한 (0이면 빈 리스트 = 통과)
+#   bool_true       : 필드가 True
+#   bool_false      : 필드가 False (또는 None)
+#   dict_has_keys   : 딕셔너리가 지정 키를 모두 포함
+#   numeric_gte     : 숫자 >= 기준값
+#   numeric_lte     : 숫자 <= 기준값
+#   one_of          : 필드 값이 허용 목록에 포함
 
 gates:
-  requirement:
-    required_fields: [cr_id, requirement_text, target_system]
-    min_length:
-      requirement_text: 50
-  impact_analysis:
-    required_fields: [affected_tables, affected_programs]
-    oracle_check: true
-  artifact:
-    required_files: [requirement_doc, impact_doc, test_definition]
-  master_registration:
-    checks:
-      - program_master: true
-      - table_master: true
-      - term_dictionary: true
-      - oracle_consistency: true
-  deploy:
-    required_files: [pr_url, test_result_mail, release_attachment]
+
+  # ════════════════════════════════════════════════════════════════════
+  # STEP 1: 요구사항 구체화 완료
+  # ════════════════════════════════════════════════════════════════════
+  - id: "REQ-001"
+    step: "requirement"
+    name: "요구사항 구체화 결과 존재"
+    description: "요구사항 구체화 Skill이 실행되어 결과가 생성됨"
+    required: true
+    check_type: field_exists
+    field: "requirement_result"
+
+  - id: "REQ-002"
+    step: "requirement"
+    name: "구체화된 요구사항 최소 길이"
+    description: "구체화된 요구사항 본문이 50자 이상"
+    required: true
+    check_type: min_length
+    field: "requirement_result.structured_requirement"
+    min_length: 50
+
+  - id: "REQ-003"
+    step: "requirement"
+    name: "확인 질문 목록 생성"
+    description: "담당자 확인이 필요한 질문이 1개 이상 생성됨"
+    required: false        # 권고사항 (차단하지 않음)
+    check_type: list_not_empty
+    field: "requirement_result.clarification_questions"
+
+  - id: "REQ-004"
+    step: "requirement"
+    name: "담당자 확인 완료"
+    description: "요구사항 구체화 내용을 담당자가 확인·확정함 (HITL)"
+    required: true
+    check_type: bool_true
+    field: "requirement_result.confirmed"
+
+  # ════════════════════════════════════════════════════════════════════
+  # STEP 2: 영향도 분석 완료
+  # ════════════════════════════════════════════════════════════════════
+  - id: "IMP-001"
+    step: "impact_analysis"
+    name: "영향도 분석 결과 존재"
+    description: "영향도 분석 Skill이 실행되어 결과가 생성됨"
+    required: true
+    check_type: field_exists
+    field: "impact_result"
+
+  - id: "IMP-002"
+    step: "impact_analysis"
+    name: "영향 테이블 목록 확인"
+    description: "영향받는 테이블 목록이 조회됨 (0건도 유효)"
+    required: true
+    check_type: field_exists
+    field: "impact_result.affected_tables"
+
+  - id: "IMP-003"
+    step: "impact_analysis"
+    name: "영향 프로그램 목록 확인"
+    description: "영향받는 프로그램 목록이 조회됨"
+    required: true
+    check_type: field_exists
+    field: "impact_result.affected_programs"
+
+  - id: "IMP-004"
+    step: "impact_analysis"
+    name: "Oracle 정합성 이슈 없음"
+    description: "Oracle 딕셔너리 정합성 이슈 0건 (이슈 있으면 차단)"
+    required: true
+    check_type: list_max_count
+    field: "impact_result.oracle_consistency_issues"
+    max_count: 0
+
+  - id: "IMP-005"
+    step: "impact_analysis"
+    name: "영향도 요약 작성"
+    description: "영향도 요약 텍스트가 존재함"
+    required: false
+    check_type: field_not_empty
+    field: "impact_result.impact_summary"
+
+  # ════════════════════════════════════════════════════════════════════
+  # STEP 3: 공수 산정 완료
+  # ════════════════════════════════════════════════════════════════════
+  - id: "EST-001"
+    step: "estimation"
+    name: "공수 산정 결과 존재"
+    description: "공수 산정 Skill이 실행되어 결과가 생성됨"
+    required: true
+    check_type: field_exists
+    field: "estimation_result"
+
+  - id: "EST-002"
+    step: "estimation"
+    name: "추정 공수 양수"
+    description: "총 개발 시간 추정값이 0보다 큼"
+    required: true
+    check_type: numeric_gte
+    field: "estimation_result.estimated_hours"
+    threshold: 0.1
+
+  - id: "EST-003"
+    step: "estimation"
+    name: "공수 산정 근거 존재"
+    description: "산정 근거 유사 CR이 1건 이상 참조됨"
+    required: false
+    check_type: list_not_empty
+    field: "estimation_result.basis_cr_ids"
+
+  # ════════════════════════════════════════════════════════════════════
+  # STEP 4: Task 분해 완료
+  # ════════════════════════════════════════════════════════════════════
+  - id: "TASK-001"
+    step: "task_breakdown"
+    name: "Task 목록 생성"
+    description: "단위 Task가 1개 이상 도출됨"
+    required: true
+    check_type: list_not_empty
+    field: "task_breakdown_result.tasks"
+
+  # ════════════════════════════════════════════════════════════════════
+  # STEP 5: 산출물 초안 생성 완료
+  # ════════════════════════════════════════════════════════════════════
+  - id: "ART-001"
+    step: "artifact"
+    name: "요구사항 분석서 초안 생성"
+    description: "요구사항 분석서 초안이 생성됨"
+    required: true
+    check_type: field_not_empty
+    field: "artifact_result.requirement_doc"
+
+  - id: "ART-002"
+    step: "artifact"
+    name: "영향도 분석서 초안 생성"
+    description: "영향도 분석서 초안이 생성됨"
+    required: true
+    check_type: field_not_empty
+    field: "artifact_result.impact_doc"
+
+  - id: "ART-003"
+    step: "artifact"
+    name: "테스트 정의서 초안 생성"
+    description: "테스트 정의서 초안이 생성됨"
+    required: true
+    check_type: field_not_empty
+    field: "artifact_result.test_definition_doc"
+
+  - id: "ART-004"
+    step: "artifact"
+    name: "산출물 담당자 확인 완료"
+    description: "생성된 산출물 초안을 담당자가 검토·확인함 (HITL 1)"
+    required: true
+    check_type: bool_true
+    field: "artifact_result.confirmed"
+
+  # ════════════════════════════════════════════════════════════════════
+  # STEP 6: 시스템 등록 지원 완료
+  # ════════════════════════════════════════════════════════════════════
+  - id: "REG-001"
+    step: "registration"
+    name: "JSM 등록 초안 생성"
+    description: "JSM 변경 등록 입력값 초안이 생성됨"
+    required: true
+    check_type: field_exists
+    field: "registration_result.jsm_draft"
+
+  - id: "REG-002"
+    step: "registration"
+    name: "프로그램마스터 초안 생성"
+    description: "프로그램마스터 등록 입력값 초안이 생성됨"
+    required: true
+    check_type: field_exists
+    field: "registration_result.program_master_draft"
+
+  - id: "REG-003"
+    step: "registration"
+    name: "미등록 용어 처리"
+    description: "미등록 용어가 없거나, 있으면 등록 초안이 생성됨"
+    required: true
+    check_type: field_exists
+    field: "registration_result.unregistered_terms"
+
+  # ════════════════════════════════════════════════════════════════════
+  # STEP 7: 게이트 통과 (관리 포인트 최종 확인)
+  # ════════════════════════════════════════════════════════════════════
+  - id: "GATE-001"
+    step: "gate_check"
+    name: "전체 필수 규칙 통과"
+    description: "required=true 규칙이 모두 충족됨"
+    required: true
+    check_type: bool_true
+    field: "_all_required_passed"    # 엔진 내부 집계값
+
+  # ════════════════════════════════════════════════════════════════════
+  # STEP 8: 배포 준비 완료
+  # ════════════════════════════════════════════════════════════════════
+  - id: "DEP-001"
+    step: "deploy"
+    name: "PR 본문 초안 생성"
+    description: "GitHub PR 본문 초안이 생성됨"
+    required: true
+    check_type: field_not_empty
+    field: "deploy_result.pr_body_draft"
+
+  - id: "DEP-002"
+    step: "deploy"
+    name: "현업 테스트 요청 메일 초안 생성"
+    description: "현업 테스트 요청 메일 초안이 생성됨"
+    required: true
+    check_type: field_not_empty
+    field: "deploy_result.test_request_mail_draft"
+
+  - id: "DEP-003"
+    step: "deploy"
+    name: "Release 첨부물 3종 완비"
+    description: "요구사항 분석서, 테스트 정의서, 현업 확인 메일 모두 준비됨"
+    required: true
+    check_type: bool_true
+    field: "deploy_result.all_attachments_ready"
+
+  - id: "DEP-004"
+    step: "deploy"
+    name: "배포 담당자 최종 승인"
+    description: "PR 발행, Release 상신을 담당자가 최종 승인함 (HITL 3)"
+    required: true
+    check_type: field_not_empty
+    field: "deploy_result.pr_url"
