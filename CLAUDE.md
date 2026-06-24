@@ -93,6 +93,7 @@ Tasks defined in `docs/AI-Agent_TASK.md`. Current status:
 - **T1-3** (architecture design): pending
 - **T1-4** (gate config): pending
 - **T2**: RAG pipeline — chunking, indexing, hybrid search (`src/rag/`)
+  - **T2-1** (data collection & preprocessing): complete — collector, preprocessor, chunker, embedder, indexer, pipeline; 28 tests passing
 - **T3**: 8 skill implementations (`src/skills/`)
 - **T4**: Validation & optimization
 - **T5**: MVP operations

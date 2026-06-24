@@ -29,6 +29,10 @@ rag:
   dense_weight: 0.7      # 벡터 검색 가중치
   reranker_top_k: 10     # Reranker 입력 후보 수
   final_top_k: 5         # 최종 반환 문서 수
+  chunk_size_code: 1500  # 코드 청크 최대 문자 수
+  chunk_size_doc: 1000   # 문서 청크 최대 문자 수
+  chunk_overlap: 100     # 청크 오버랩 문자 수
+  min_chunk_length: 50   # 최소 청크 길이 (미만 필터)
 
 agent:
   max_steps: 20          # 무한 루프 방지
